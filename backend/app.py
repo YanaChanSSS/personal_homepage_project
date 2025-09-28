@@ -520,7 +520,7 @@ if __name__ == '__main__':
                 email='2974691773@qq.com',
                 role='admin'
             )
-            admin_user.set_password('Jokerlike114514')
+            admin_user.set_password('114514')
             db.session.add(admin_user)
             db.session.commit()
             print("默认管理员账户已创建")
