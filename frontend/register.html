@@ -13,10 +13,12 @@
             <div class="form-group">
                 <label for="registerUsername">用户名</label>
                 <input type="text" id="registerUsername" name="username" required placeholder="建议使用英文或数字">
+                <div id="username-feedback" class="feedback"></div>
             </div>
             <div class="form-group">
                 <label for="registerEmail">邮箱</label>
                 <input type="email" id="registerEmail" name="email" required placeholder="请输入邮箱地址">
+                <div id="email-feedback" class="feedback"></div>
             </div>
             <div class="form-group captcha-group">
                 <label for="emailCode">邮箱验证码</label>
@@ -24,6 +26,7 @@
                     <input type="text" id="emailCode" name="emailCode" required placeholder="请输入邮箱验证码">
                     <button type="button" id="sendEmailCode">发送验证码</button>
                 </div>
+                <div id="email-code-feedback" class="feedback"></div>
             </div>
             <div class="form-group">
                 <label for="registerPassword">密码</label>
@@ -128,6 +131,82 @@
 
         document.getElementById('confirmPassword').addEventListener('input', function() {
             checkPasswordMatch();
+        });
+
+        // 用户名实时验证
+        document.getElementById('registerUsername').addEventListener('blur', function() {
+            const username = this.value;
+            const feedback = document.getElementById('username-feedback');
+            
+            if (username.length < 3) {
+                feedback.textContent = '用户名至少需要3个字符';
+                feedback.className = 'feedback error';
+                return;
+            }
+            
+            if (username.length > 20) {
+                feedback.textContent = '用户名不能超过20个字符';
+                feedback.className = 'feedback error';
+                return;
+            }
+            
+            // 检查用户名是否已存在
+            fetch('/check_username', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({username: username})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.exists) {
+                    feedback.textContent = '用户名已存在，请选择其他用户名';
+                    feedback.className = 'feedback error';
+                } else {
+                    feedback.textContent = '用户名可用';
+                    feedback.className = 'feedback success';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        // 邮箱实时验证
+        document.getElementById('registerEmail').addEventListener('blur', function() {
+            const email = this.value;
+            const feedback = document.getElementById('email-feedback');
+            
+            // 邮箱格式验证
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                feedback.textContent = '请输入有效的邮箱地址';
+                feedback.className = 'feedback error';
+                return;
+            }
+            
+            // 检查邮箱是否已存在
+            fetch('/check_email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({email: email})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.exists) {
+                    feedback.textContent = '该邮箱已被注册，请使用其他邮箱';
+                    feedback.className = 'feedback error';
+                } else {
+                    feedback.textContent = '邮箱地址可用';
+                    feedback.className = 'feedback success';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         });
 
         function checkPasswordStrength(password) {

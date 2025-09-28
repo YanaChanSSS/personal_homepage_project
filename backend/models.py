@@ -9,7 +9,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=True)
-    password_hash = db.Column(db.String(120), nullable=False)
+    # 修改password_hash字段长度从120到255，以适应scrypt哈希值
+    password_hash = db.Column(db.String(255), nullable=False)
     bio = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     # 添加角色字段，默认为'user'，管理员为'admin'

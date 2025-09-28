@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from models import db, User, Message, DeveloperReply
-from flask_sqlalchemy import SQLAlchemy
 import os
 import random
 import string
@@ -19,13 +18,11 @@ import base64
 # 添加正则表达式模块
 import re
 
-db = SQLAlchemy()
-
 app = Flask(__name__, template_folder='../frontend', static_folder='../frontend')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'your-secret_key_here'  # 部署时应使用强密钥
 # MySQL数据库配置
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') or \
-    'mysql+pymysql://username:password@your-cloud-db-host/auth_system'
+    'mysql+pymysql://username:password@localhost/database_name'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # 邮件配置
@@ -465,11 +462,33 @@ def reply_to_message(message_id):
         }
     })
 
-@app.route('/logout')
-def logout():
+@app.route('/api/check_login')
+def check_login():
+    if 'username' in session:
+        return jsonify({'logged_in': True, 'username': session['username'], 'role': session.get('role', 'user')})
+    else:
+        return jsonify({'logged_in': False})
+
+@app.route('/api/user_info')
+def user_info():
+    if 'username' not in session:
+        return jsonify({'error': '未登录'}), 401
+    
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
+        return jsonify({'error': '用户不存在'}), 404
+    
+    return jsonify({
+        'email': user.email,
+        'bio': user.bio
+    })
+
+# 修改/logout路由以支持POST请求并返回JSON
+@app.route('/logout', methods=['POST'])
+def logout_api():
     session.pop('username', None)
-    flash('您已退出登录', 'info')
-    return redirect(url_for('login'))
+    session.pop('role', None)
+    return jsonify({'success': True, 'message': '您已退出登录'})
 
 # 添加密码强度验证函数
 def validate_password_strength(password):

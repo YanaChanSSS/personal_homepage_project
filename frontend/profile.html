@@ -213,7 +213,7 @@ NEW_FILE_CODE
         <div class="profile-container">
             <div class="profile-header">
                 <div class="avatar-container">
-                    <img src="png/YanaChan.png" alt="用户头像" class="user-avatar-large" id="profile-avatar">
+                    <img src="images/default-avatar.png" alt="用户头像" class="user-avatar-large" id="profile-avatar">
                     <button class="edit-avatar-btn" id="change-avatar">✏️</button>
                 </div>
                 <h1>用户信息</h1>
@@ -268,58 +268,81 @@ NEW_FILE_CODE
             const loginTrigger = document.getElementById('login-trigger');
             const userProfile = document.getElementById('user-profile');
             
-            // 模拟检查登录状态
-            const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
-            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
-            
-            if (isLoggedIn && currentUser.username) {
-                loginTrigger.style.display = 'none';
-                userProfile.style.display = 'block';
-                
-                // 填充用户信息
-                document.getElementById('username').value = currentUser.username;
-                document.getElementById('email').value = currentUser.email || '';
-                document.getElementById('bio').value = currentUser.bio || '';
-                document.getElementById('message').value = currentUser.message || '';
-                
-                // 加载留言记录
-                loadMessages(currentUser.username);
-            } else {
-                window.location.href = 'login.html';
-            }
+            // 检查用户登录状态
+            fetch('/api/check_login')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.logged_in) {
+                        loginTrigger.style.display = 'none';
+                        userProfile.style.display = 'block';
+                        document.getElementById('username').value = data.username;
+                        
+                        // 填充用户信息
+                        fetch('/api/user_info')
+                            .then(response => response.json())
+                            .then(userInfo => {
+                                document.getElementById('email').value = userInfo.email || '';
+                                document.getElementById('bio').value = userInfo.bio || '';
+                            });
+                        
+                        // 加载留言记录
+                        loadMessages();
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                });
             
             // 处理表单提交
             document.getElementById('profile-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                const userData = {
-                    username: currentUser.username,
-                    email: document.getElementById('email').value,
-                    bio: document.getElementById('bio').value,
-                    message: document.getElementById('message').value
-                };
+                const email = document.getElementById('email').value;
+                const bio = document.getElementById('bio').value;
+                const messageContent = document.getElementById('message').value;
                 
-                // 保存用户数据（模拟）
-                sessionStorage.setItem('currentUser', JSON.stringify(userData));
-                
-                // 如果有新留言，则添加到留言列表
-                if (userData.message) {
-                    addMessage(userData.username, userData.message);
-                }
-                
-                alert('信息保存成功！');
+                // 更新用户信息
+                fetch('/profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `email=${encodeURIComponent(email)}&bio=${encodeURIComponent(bio)}&message=${encodeURIComponent(messageContent)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('信息保存成功！');
+                        // 清空消息框
+                        document.getElementById('message').value = '';
+                        // 重新加载留言
+                        loadMessages();
+                    } else {
+                        alert('保存失败: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('网络错误，请稍后重试');
+                });
             });
             
             // 退出登录
             document.getElementById('logout-btn').addEventListener('click', function() {
-                sessionStorage.removeItem('isLoggedIn');
-                sessionStorage.removeItem('currentUser');
-                window.location.href = 'login.html';
-            });
-            
-            // 点击头像跳转到个人资料页
-            document.querySelector('.user-avatar').addEventListener('click', function() {
-                window.location.href = 'profile.html';
+                fetch('/logout', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = 'login.html';
+                    } else {
+                        alert('退出登录失败');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('网络错误，请稍后重试');
+                });
             });
         });
 
