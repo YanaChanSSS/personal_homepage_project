@@ -292,7 +292,7 @@ button:hover {
 
 .strength-text {
     font-size: 14px;
-    color: #ccc;
+    color: #aaff00;
 }
 
 .strength-text.weak {
@@ -310,7 +310,7 @@ button:hover {
 .password-requirements {
     margin-top: 15px;
     font-size: 14px;
-    color: #ccc;
+    color: #aaff7f;
 }
 
 .password-requirements ul {

@@ -59,4 +59,58 @@
 - 管理员可回复用户留言
 - 角色权限控制
 
-## 项目结构
+## 部署说明
+
+### 宝塔面板部署步骤
+
+1. 在宝塔面板中创建网站，选择Python项目类型
+2. 将此项目上传到网站目录
+3. 安装依赖：
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. 配置环境变量（在宝塔面板的网站设置中配置，或创建.env文件）：
+   - SECRET_KEY: 你的应用密钥
+   - MYSQL_HOST: 数据库主机地址
+   - MYSQL_PORT: 数据库端口
+   - MYSQL_USER: 数据库用户名
+   - MYSQL_PASSWORD: 数据库密码
+   - MYSQL_DB: 数据库名称
+   - REDIS_HOST: Redis主机地址
+   - REDIS_PORT: Redis端口
+   - REDIS_PASSWORD: Redis密码（如果有的话）
+
+5. 在宝塔面板中设置项目启动方式：
+   - 项目目录：选择项目根目录
+   - 启动文件：wsgi.py
+   - 启动对象：app
+
+6. 启动项目并访问网站
+
+### 手动部署
+
+1. 克隆或下载项目代码
+2. 创建虚拟环境：
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   # 或
+   venv\Scripts\activate     # Windows
+   ```
+3. 安装依赖：
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. 配置环境变量（创建 .env 文件，参考 .env.example）
+5. 初始化数据库：
+   ```bash
+   python -c "from personal_homepage_project.backend.app import create_app, db; app=create_app(); app.app_context().push(); db.create_all()"
+   ```
+6. 启动应用：
+   ```bash
+   gunicorn -w 4 -b 0.0.0.0:5000 wsgi:app
+   ```
+
+## 环境变量配置
+
+参考 [.env.example](.env.example) 文件创建你的环境配置文件。
