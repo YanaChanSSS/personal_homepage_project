@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录</title>
+    <link rel="stylesheet" href="css/shared.css" />
+</head>
+<body>
+    <div class="form-container">
+        <h1 class="form-title">登录</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="loginUsername" class="form-label">用户名/邮箱</label>
+                <input type="text" id="loginUsername" name="username" required placeholder="请输入用户名或邮箱" class="form-input">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword" class="form-label">密码</label>
+                <input type="password" id="loginPassword" name="password" required placeholder="请输入密码" class="form-input">
+            </div>
+            <button type="submit" class="form-button">登录</button>
+        </form>
+        <div class="switch-form">
+            <p>还没有账号？<a href="register.html">立即注册</a></p>
+        </div>
+        <div id="message" class="message" style="display: none;"></div>
+    </div>
+
+    <script type="module">
+        import { showMessage, fetchPostForm } from './js/utils.js';
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!username || !password) {
+                showMessage('message', '请输入用户名和密码', 'error');
+                return;
+            }
+
+            try {
+                // 准备表单数据
+                const formData = new FormData();
+                formData.append('username', username);
+                formData.append('password', password);
+                
+                // 向后端发送登录请求
+                const data = await fetchPostForm('/login', formData);
+                
+                if (data.success) {
+                    showMessage('message', '登录成功！', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'home.html';
+                    }, 1000);
+                } else {
+                    showMessage('message', data.message || '登录失败', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('message', '网络错误，请稍后重试', 'error');
+            }
+        });
+        
+        // 添加全局鼠标柔和光效
+        document.body.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            document.body.style.setProperty('--mouse-x', `${x}px`);
+            document.body.style.setProperty('--mouse-y', `${y}px`);
+        });
+        
+        // 初始化鼠标位置在中心
+        document.body.style.setProperty('--mouse-x', '50%');
+        document.body.style.setProperty('--mouse-y', '50%');
+    </script>
+</body>
+</html>

@@ -1,0 +1,655 @@
+/* 全局重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===== 全局容器 ===== */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* 基础设置 */
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0a1a2f;
+}
+
+/* =============== 动态背景 =============== */
+body {
+    background: linear-gradient(135deg, rgba(121, 163, 206, 0.8), rgba(173, 216, 230, 0.8));
+    background-size: 600% 600%;
+    animation: gradientShift 20s ease infinite;
+    position: relative;
+    min-height: 100vh;
+    transition: background-position 0.1s ease-out;
+    color: #e0e0e0;
+    line-height: 1.7;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 流动光线 */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+    background-size: 200% 100%;
+    opacity: 0.3;
+    animation: slide 2s infinite linear;
+}
+
+@keyframes slide {
+    0% { background-position: -100% center; }
+    100% { background-position: 200% center; }
+}
+
+/* 内容提升层级 */
+.container, main, header, section, .bottom-modules, footer, nav, .module {
+    position: relative;
+    z-index: 2;
+}
+
+/* 用户头像样式 */
+#user-profile {
+    margin-left: auto;
+    cursor: pointer;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #6bb0f7;
+    transition: transform 0.3s ease;
+}
+
+.user-avatar:hover {
+    transform: scale(1.1);
+}
+
+/* ===== 右上角登录面板 ===== */
+#auth-panel {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    width: 320px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    z-index: 1000;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transform: translateY(-10px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#auth-panel.active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+.panel-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 20px;
+    color: #aaa;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.panel-close:hover {
+    color: white;
+}
+
+#auth-panel input {
+    width: 100%;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1rem;
+    outline: none;
+}
+
+#auth-panel input::placeholder {
+    color: #ccc;
+}
+
+#auth-panel button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background: #6bb0f7;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#auth-panel button[type="submit"]:hover {
+    background: #5aa0e7;
+}
+
+.auth-tabs {
+    display: flex;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    color: #ccc;
+    font-size: 1rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s;
+}
+
+.tab-button.active {
+    color: white;
+    border-bottom: 2px solid #6bb0f7;
+}
+
+#login-trigger {
+    margin-left: auto;
+    padding: 8px 16px;
+    background: rgba(107, 176, 247, 0.3);
+    color: white;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+#login-trigger:hover {
+    background: rgba(107, 176, 247, 0.6);
+    transform: scale(1.05);
+}
+
+/* =============== 导航栏（修复宽度问题） =============== */
+header {
+    background-color: rgba(173, 216, 230, 0.98);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.35);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 20px;
+}
+
+.header .container {
+    background: inherit;
+    border-radius: 20px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    padding: 16px 0;
+}
+
+nav a {
+    font-weight: 500;
+    font-size: 1.15rem;
+    color: #1a3a66;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 10px 18px;
+    border-radius: 12px;
+    text-decoration: none;
+}
+
+nav a:hover {
+    color: #fff;
+    background: rgba(107, 176, 247, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(107, 176, 247, 0.3);
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(10, 36, 99, 0.4), rgba(10, 36, 99, 0.7));
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: -1;
+}
+
+header.scrolled::before {
+    opacity: 1;
+}
+
+/* =============== 主体内容 =============== */
+main {
+    padding: 60px 0 40px;
+}
+
+/* ===== 页面切换逻辑（关键修改）===== */
+/* 电脑端：所有页面都显示；手机端：只显示 .active */
+.page {
+    padding: 60px 0 40px;
+    min-height: calc(100vh - 80px);
+    box-sizing: border-box;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 默认所有页面都显示（用于电脑端） */
+.page {
+    display: block;
+}
+
+/* 仅在手机端隐藏非 active 页面 */
+@media (max-width: 768px) {
+    .page {
+        display: none;
+    }
+    .page.active {
+        display: block;
+    }
+}
+
+section {
+    margin-bottom: 100px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 3.4rem;
+    font-weight: 700;
+    color: #0047b3;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #0055ff;
+    margin-bottom: 24px;
+    letter-spacing: -0.3px;
+}
+
+h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 16px;
+}
+
+p {
+    color: #ccc;
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin: 0 auto 20px;
+    line-height: 1.75;
+}
+
+.divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent);
+    margin: 70px auto;
+    max-width: 1000px;
+    border: none;
+}
+
+#home {
+    padding: 100px 0 60px;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    color: #aaff7f;
+    font-weight: 400;
+    margin-bottom: 12px;
+}
+
+.intro {
+    font-size: 1.25rem;
+    color: #ddd;
+    max-width: 680px;
+    margin: 12px auto 32px;
+    font-weight: 300;
+}
+
+.projects {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 32px;
+}
+
+.project {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    width: 320px;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.project:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+}
+
+.project img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.project-content {
+    padding: 24px;
+}
+
+.project h3 {
+    font-size: 1.35rem;
+    margin-bottom: 12px;
+    color: #fff;
+}
+
+.project p {
+    color: #ddd;
+    font-size: 1rem;
+    margin-bottom: 16px;
+}
+
+.project a {
+    color: #6bb0f7;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(107, 176, 247, 0.3);
+    padding-bottom: 2px;
+}
+
+.project a:hover {
+    color: #8ec5fc;
+    border-color: #8ec5fc;
+}
+
+.contact a {
+    display: inline-block;
+    margin: 12px 20px;
+    font-size: 1.55rem;
+    color: #6bb0f7;
+    transition: color 0.3s;
+}
+
+.contact a:hover {
+    color: #8ec5fc;
+    transform: scale(1.05);
+}
+
+/* 底部双模块 */
+.bottom-modules {
+    padding: 50px 0;
+    margin: 0 auto;
+}
+
+.bottom-modules .container {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.module {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    padding: 0;
+}
+
+.module:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4);
+}
+
+.image-container {
+    overflow: hidden;
+    border-radius: 16px;
+    margin: 24px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.mini-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 16px;
+    transition: transform 0.4s ease;
+}
+
+.mini-image:hover {
+    transform: scale(1.03);
+}
+
+.text-placeholder {
+    margin: 24px;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(6px);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 320px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ccc;
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+.text-placeholder h3 {
+    font-size: 1.5rem;
+    color: #fff;
+    margin: 0 0 18px 0;
+    text-align: left;
+}
+
+.text-placeholder .content-area p {
+    margin: 10px 0;
+    color: #ddd;
+}
+
+.text-placeholder a {
+    color: #6bb0f7;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.text-placeholder a:hover {
+    color: #8ec5fc;
+}
+
+/* =============== 彩色渐变鼠标拖影 =============== */
+.mouse-trail {
+    position: fixed;
+    pointer-events: none;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    /* 使用 transition 实现颜色和大小渐变 */
+    transition: 
+        background-color 1.5s ease-out,
+        transform 1.5s ease-out,
+        opacity 1.5s ease-out;
+    opacity: 0.8;
+}
+
+/* 页脚 */
+.main-footer {
+    text-align: center;
+    padding: 36px 0;
+    background-color: rgba(0, 170, 255, 1.0);
+    backdrop-filter: blur(12px);
+    color: #aaa;
+    font-size: 0.95rem;
+    margin-top: 60px;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.25);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.main-footer p {
+    margin: 0;
+    opacity: 0.8;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .bottom-modules .container {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .module {
+        width: 100%;
+        max-width: 500px;
+    }
+
+    nav {
+        gap: 18px;
+        padding: 14px 0;
+        flex-wrap: wrap;
+    }
+
+    h1 {
+        font-size: 2.8rem;
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+
+    .projects {
+        gap: 24px;
+    }
+
+    .project {
+        width: 100%;
+        max-width: 340px;
+    }
+
+    #home {
+        padding: 80px 0 50px;
+    }
+
+    .divider {
+        margin: 60px auto;
+    }
+
+    main {
+        padding: 40px 0 30px;
+    }
+
+    #auth-panel {
+        right: 16px;
+    }
+
+    /* 手机端隐藏页脚（因为 .page-other 已包含） */
+    .main-footer {
+        display: none;
+    }
+}
+
+/* ===== 手机端底部导航栏 ===== */
+.mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(173, 216, 230, 0.98);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    display: none; /* 默认隐藏，由 JS 控制 */
+    justify-content: space-around;
+    padding: 12px 0;
+    z-index: 1000;
+}
+
+.mobile-nav .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #1a3a66;
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 8px 0;
+    transition: color 0.3s;
+    opacity: 0.7;
+}
+
+.mobile-nav .nav-item.active {
+    color: #0055ff;
+    opacity: 1;
+    font-weight: 600;
+}
+
+/* 隐藏元素的类 */
+.hidden {
+    display: none !important;
+}
+
+/* 触摸目标优化 */
+@media (hover: none) and (pointer: coarse) {
+    nav a,
+    .btn,
+    .tab-button,
+    .panel-close {
+        /* 增加触摸目标大小 */
+        min-height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}

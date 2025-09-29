@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>YanaChan可爱捏</title>
+    <!-- PWA配置 -->
+    <meta name="theme-color" content="#6bb0f7"/>
+    <meta name="description" content="YanaChan的个人主页，展示作品与收藏">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="images/logo-192.png">
+    <link rel="icon" href="images/logo.png" type="image/png">
+    
+    <link rel="stylesheet" href="css/home.css" />
+</head>
+<body>
+
+    <!-- ===== 导航栏 ===== -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="images/logo.png" alt="Logo" width="50" height="50" loading="lazy">
+            </div>
+            <nav class="nav">
+                <a href="home.html" class="nav-link">首页</a>
+                <a href="search.html" class="nav-link">搜索</a>
+                <a href="favorites.html" class="nav-link">收藏</a>
+                <a href="about.html" class="nav-link">关于</a>
+            </nav>
+            <a href="login.html" id="login-trigger">登录</a>
+            <div id="user-profile" class="hidden">
+                <img src="png/YanaChan.png" alt="用户头像" class="user-avatar" width="40" height="40" loading="lazy">
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== 主体内容 (电脑端连续展示) ===== -->
+    <main>
+        <div class="container">
+            <!-- 第1页：首页 -->
+            <section id="page-home" class="page active">
+                <h1>YanaChan</h1>
+                <p class="subtitle">在校大学生 | 热爱动画</p>
+                <p class="intro">欢迎来到我的个人主页！这里展示我喜欢的一切，包括我的作品与收藏。</p>
+            </section>
+        </div>
+
+        <div class="container">
+            <!-- 第2页：关于我 -->
+            <section id="page-about" class="page">
+                <h2>关于我</h2>
+                <p>我是一名在校软件工程大学生，正在学习各类技术。</p>
+                <p>我热爱学习新技术，喜欢分享知识。业余时间喜欢看动画和学习吉他。</p>
+            </section>
+        </div>
+
+        <div class="container">
+            <!-- 第3页：个人项目 -->
+            <section id="page-projects" class="page">
+                <h2>个人项目</h2>
+                <div class="projects">
+                    <div class="project">
+                        <img src="https://via.placeholder.com/300x180?text=项目1" alt="项目一" width="300" height="180" loading="lazy">
+                        <div class="project-content">
+                            <h3>在线商城</h3>
+                            <p>使用 Vue.js + Element UI 开发的电商前端，支持商品浏览、购物车和订单管理。</p>
+                            <a href="#">查看详情</a>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <img src="https://via.placeholder.com/300x180?text=项目2" alt="项目二" width="300" height="180" loading="lazy">
+                        <div class="project-content">
+                            <h3>企业官网</h3>
+                            <p>响应式官网设计，适配移动端，提升品牌专业形象。</p>
+                            <a href="#">查看详情</a>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <img src="https://via.placeholder.com/300x180?text=项目3" alt="项目三" width="300" height="180" loading="lazy">
+                        <div class="project-content">
+                            <h3>个人博客</h3>
+                            <p>基于 Markdown 的静态博客系统，支持分类与搜索。</p>
+                            <a href="#">查看详情</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="container">
+            <!-- 第4页：联系我 -->
+            <section id="page-contact" class="page">
+                <h2>联系我</h2>
+                <p>如果您有任何合作机会或问题，欢迎通过以下方式联系我：</p>
+                <div class="contact">
+                    <a href="mailto:2974691773@qq.com">📧 邮箱</a>
+                    <a href="https://github.com/YanaChanSSS" target="_blank">🐙 GitHub</a>
+                </div>
+            </section>
+        </div>
+
+        <!-- ===== 底部双模块 (独立于主内容容器，但仍在 main 内) ===== -->
+        <!-- 注意：这里移除了外层的 #page-other，使其成为 main 下的独立 section -->
+        <section class="bottom-modules">
+            <div class="container">
+                <div class="module notice-module">
+                    <div class="image-container">
+                        <a href="png/木柜子.png.png" target="_blank">
+                            <img src="png/木柜子.png" alt="望周知：木柜子" class="mini-image" width="300" height="200" loading="lazy">
+                        </a>
+                    </div>
+                    <h3>望周知</h3>
+                    <div class="content-area">
+                        <p>这里是公告区，可填写重要信息或日常更新~</p>
+                    </div>
+                </div>
+
+                <div class="module games-module">
+                    <div class="text-placeholder">
+                        <h3>各类账号</h3>
+                        <div class="content-area">
+                            <p><strong>Steam:</strong> <a href="https://my.steamchina.com/profiles/76561199375804727/" target="_blank">YanaChan</a></p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== 页脚 (独立于 main 外部) ===== -->
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2025 YanaChan 版权所有。</p>
+        </div>
+    </footer>
+
+    <!-- ===== 手机端底部导航栏 (仅在手机端显示) ===== -->
+    <nav class="mobile-nav">
+        <a href="#page-home" class="nav-item active" data-page="page-home">
+            <span>首页</span>
+        </a>
+        <a href="#page-about" class="nav-item" data-page="page-about">
+            <span>关于</span>
+        </a>
+        <a href="#page-projects" class="nav-item" data-page="page-projects">
+            <span>项目</span>
+        </a>
+        <a href="#page-contact" class="nav-item" data-page="page-contact">
+            <span>联系</span>
+        </a>
+        <a href="#page-other" class="nav-item" data-page="page-other">
+            <span>更多</span>
+        </a>
+    </nav>
+
+    <!-- 引入主逻辑脚本 -->
+    <script src="js/home.js" type="module"></script>
+    <script src="js/main.js" type="module"></script>
+</body>
+</html>
