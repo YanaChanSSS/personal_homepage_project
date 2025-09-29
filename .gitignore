@@ -102,9 +102,11 @@ celerybeat.pid
 # Environments
 .env
 .venv
+env/
 venv/
+ENV/
+env.bak/
 venv.bak/
-venvbak/
 
 # Spyder project settings
 .spyderproject
@@ -124,16 +126,42 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# IDE
+# IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# OS
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
+# dotenv
+.env.local
+.env.*.local
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
 # Project specific
+*.dist
+
+# Ignore personal environment file
 .env
-personal_homepage_project/.env
+
+# Ignore backup directories
+backup/

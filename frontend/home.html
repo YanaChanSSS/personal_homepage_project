@@ -4,6 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>YanaChan可爱捏</title>
+    <!-- PWA配置 -->
+    <meta name="theme-color" content="#6bb0f7"/>
+    <meta name="description" content="YanaChan的个人主页，展示作品与收藏">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="images/logo-192.png">
+    <link rel="icon" href="images/logo.png" type="image/png">
+    
     <link rel="stylesheet" href="css/home.css" />
 </head>
 <body>
@@ -12,7 +19,7 @@
     <header class="header">
         <div class="container">
             <div class="logo">
-                <img src="images/logo.png" alt="Logo">
+                <img src="images/logo.png" alt="Logo" width="50" height="50" loading="lazy">
             </div>
             <nav class="nav">
                 <a href="home.html" class="nav-link">首页</a>
@@ -21,8 +28,8 @@
                 <a href="about.html" class="nav-link">关于</a>
             </nav>
             <a href="login.html" id="login-trigger">登录</a>
-            <div id="user-profile" style="display: none;">
-                <img src="png/YanaChan.png" alt="用户头像" class="user-avatar">
+            <div id="user-profile" class="hidden">
+                <img src="png/YanaChan.png" alt="用户头像" class="user-avatar" width="40" height="40" loading="lazy">
             </div>
         </div>
     </header>
@@ -53,7 +60,7 @@
                 <h2>个人项目</h2>
                 <div class="projects">
                     <div class="project">
-                        <img src="https://via.placeholder.com/300x180?text=项目1" alt="项目一">
+                        <img src="https://via.placeholder.com/300x180?text=项目1" alt="项目一" width="300" height="180" loading="lazy">
                         <div class="project-content">
                             <h3>在线商城</h3>
                             <p>使用 Vue.js + Element UI 开发的电商前端，支持商品浏览、购物车和订单管理。</p>
@@ -61,7 +68,7 @@
                         </div>
                     </div>
                     <div class="project">
-                        <img src="https://via.placeholder.com/300x180?text=项目2" alt="项目二">
+                        <img src="https://via.placeholder.com/300x180?text=项目2" alt="项目二" width="300" height="180" loading="lazy">
                         <div class="project-content">
                             <h3>企业官网</h3>
                             <p>响应式官网设计，适配移动端，提升品牌专业形象。</p>
@@ -69,7 +76,7 @@
                         </div>
                     </div>
                     <div class="project">
-                        <img src="https://via.placeholder.com/300x180?text=项目3" alt="项目三">
+                        <img src="https://via.placeholder.com/300x180?text=项目3" alt="项目三" width="300" height="180" loading="lazy">
                         <div class="project-content">
                             <h3>个人博客</h3>
                             <p>基于 Markdown 的静态博客系统，支持分类与搜索。</p>
@@ -99,7 +106,7 @@
                 <div class="module notice-module">
                     <div class="image-container">
                         <a href="png/木柜子.png.png" target="_blank">
-                            <img src="png/木柜子.png" alt="望周知：木柜子" class="mini-image">
+                            <img src="png/木柜子.png" alt="望周知：木柜子" class="mini-image" width="300" height="200" loading="lazy">
                         </a>
                     </div>
                     <h3>望周知</h3>
@@ -148,6 +155,7 @@
     </nav>
 
     <!-- 引入主逻辑脚本 -->
-    <script src="js/home.js"></script>
+    <script src="js/home.js" type="module"></script>
+    <script src="js/main.js" type="module"></script>
 </body>
 </html>

@@ -4,33 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>注册</title>
+    <link rel="stylesheet" href="css/shared.css" />
     <link rel="stylesheet" href="css/register.css" />
 </head>
 <body>
-    <div class="container">
-        <h1>注册</h1>
+    <div class="form-container">
+        <h1 class="form-title">注册</h1>
         <form id="registerForm">
             <div class="form-group">
-                <label for="registerUsername">用户名</label>
-                <input type="text" id="registerUsername" name="username" required placeholder="建议使用英文或数字">
+                <label for="registerUsername" class="form-label">用户名</label>
+                <input type="text" id="registerUsername" name="username" required placeholder="建议使用英文或数字" class="form-input">
                 <div id="username-feedback" class="feedback"></div>
             </div>
             <div class="form-group">
-                <label for="registerEmail">邮箱</label>
-                <input type="email" id="registerEmail" name="email" required placeholder="请输入邮箱地址">
+                <label for="registerEmail" class="form-label">邮箱</label>
+                <input type="email" id="registerEmail" name="email" required placeholder="请输入邮箱地址" class="form-input">
                 <div id="email-feedback" class="feedback"></div>
             </div>
             <div class="form-group captcha-group">
-                <label for="emailCode">邮箱验证码</label>
+                <label for="emailCode" class="form-label">邮箱验证码</label>
                 <div class="captcha-controls">
-                    <input type="text" id="emailCode" name="emailCode" required placeholder="请输入邮箱验证码">
-                    <button type="button" id="sendEmailCode">发送验证码</button>
+                    <input type="text" id="emailCode" name="emailCode" required placeholder="请输入邮箱验证码" class="form-input">
+                    <button type="button" id="sendEmailCode" class="form-button">发送验证码</button>
                 </div>
                 <div id="email-code-feedback" class="feedback"></div>
             </div>
             <div class="form-group">
-                <label for="registerPassword">密码</label>
-                <input type="password" id="registerPassword" name="password" required placeholder="至少8位，包含大小写字母、数字和特殊字符">
+                <label for="registerPassword" class="form-label">密码</label>
+                <input type="password" id="registerPassword" name="password" required placeholder="至少8位，包含大小写字母、数字和特殊字符" class="form-input">
                 <!-- 添加密码强度提示 -->
                 <div class="password-strength">
                     <div class="strength-meter">
@@ -50,11 +51,11 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="confirmPassword">确认密码</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="请再次输入密码">
+                <label for="confirmPassword" class="form-label">确认密码</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="请再次输入密码" class="form-input">
                 <div id="password-match"></div>
             </div>
-            <button type="submit">注册</button>
+            <button type="submit" class="form-button">注册</button>
         </form>
         <div class="switch-form">
             <p>已有账号？<a href="login.html">立即登录</a></p>
@@ -62,64 +63,57 @@
         <div id="message" class="message" style="display: none;"></div>
     </div>
 
-    <script>
+    <script type="module">
+        import { showMessage, fetchPost, fetchGet } from './js/utils.js';
+
         // 页面加载时获取图形验证码
         window.addEventListener('load', function() {
             refreshCaptcha();
         });
 
         // 刷新图形验证码
-        function refreshCaptcha() {
-            fetch('/captcha')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('captchaImage').src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="40"><rect width="100" height="40" fill="#f0f0f0"/><text x="50%" y="50%" font-size="20" text-anchor="middle" fill="#333" dy=".3em">' + data.captcha + '</text></svg>';
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+        async function refreshCaptcha() {
+            try {
+                const data = await fetchGet('/captcha');
+                document.getElementById('captchaImage').src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="40"><rect width="100" height="40" fill="#f0f0f0"/><text x="50%" y="50%" font-size="20" text-anchor="middle" fill="#333" dy=".3em">' + data.captcha + '</text></svg>';
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
 
         // 点击图片刷新验证码
         document.getElementById('captchaImage').addEventListener('click', refreshCaptcha);
 
         // 发送邮箱验证码
-        document.getElementById('sendEmailCode').addEventListener('click', function() {
+        document.getElementById('sendEmailCode').addEventListener('click', async function() {
             const email = document.getElementById('registerEmail').value;
             
             if (!email) {
-                showMessage('请输入邮箱地址', 'error');
+                showMessage('message', '请输入邮箱地址', 'error');
                 return;
             }
 
             // 简单的邮箱格式验证
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                showMessage('请输入有效的邮箱地址', 'error');
+                showMessage('message', '请输入有效的邮箱地址', 'error');
                 return;
             }
 
-            // 发送邮箱验证码请求
-            fetch('/send_email_code', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({email: email})
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                // 发送邮箱验证码请求
+                const data = await fetchPost('/send_email_code', {email: email});
+                
                 if (data.success) {
-                    showMessage('验证码已发送，请查收邮箱', 'success');
+                    showMessage('message', '验证码已发送，请查收邮箱', 'success');
                     // 实际应用中应该添加倒计时功能
                 } else {
-                    showMessage(data.message || '发送失败', 'error');
+                    showMessage('message', data.message || '发送失败', 'error');
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error:', error);
-                showMessage('网络错误，请稍后重试', 'error');
-            });
+                showMessage('message', '网络错误，请稍后重试', 'error');
+            }
         });
 
         // 添加密码强度检查
@@ -134,7 +128,7 @@
         });
 
         // 用户名实时验证
-        document.getElementById('registerUsername').addEventListener('blur', function() {
+        document.getElementById('registerUsername').addEventListener('blur', async function() {
             const username = this.value;
             const feedback = document.getElementById('username-feedback');
             
@@ -150,16 +144,10 @@
                 return;
             }
             
-            // 检查用户名是否已存在
-            fetch('/check_username', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({username: username})
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                // 检查用户名是否已存在
+                const data = await fetchPost('/check_username', {username: username});
+                
                 if (data.exists) {
                     feedback.textContent = '用户名已存在，请选择其他用户名';
                     feedback.className = 'feedback error';
@@ -167,14 +155,13 @@
                     feedback.textContent = '用户名可用';
                     feedback.className = 'feedback success';
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error:', error);
-            });
+            }
         });
 
         // 邮箱实时验证
-        document.getElementById('registerEmail').addEventListener('blur', function() {
+        document.getElementById('registerEmail').addEventListener('blur', async function() {
             const email = this.value;
             const feedback = document.getElementById('email-feedback');
             
@@ -186,16 +173,10 @@
                 return;
             }
             
-            // 检查邮箱是否已存在
-            fetch('/check_email', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({email: email})
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                // 检查邮箱是否已存在
+                const data = await fetchPost('/check_email', {email: email});
+                
                 if (data.exists) {
                     feedback.textContent = '该邮箱已被注册，请使用其他邮箱';
                     feedback.className = 'feedback error';
@@ -203,10 +184,9 @@
                     feedback.textContent = '邮箱地址可用';
                     feedback.className = 'feedback success';
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error:', error);
-            });
+            }
         });
 
         function checkPasswordStrength(password) {
@@ -294,7 +274,7 @@
             }
         }
 
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const username = document.getElementById('registerUsername').value;
@@ -305,49 +285,51 @@
             const emailCode = document.getElementById('emailCode').value;
             
             if (!username || !email || !password || !confirmPassword || !captcha || !emailCode) {
-                showMessage('请填写所有字段', 'error');
+                showMessage('message', '请填写所有字段', 'error');
                 return;
             }
             
             if (password !== confirmPassword) {
-                showMessage('两次输入的密码不一致', 'error');
+                showMessage('message', '两次输入的密码不一致', 'error');
                 return;
             }
             
             // 检查密码强度
             const passwordError = validatePassword(password);
             if (passwordError) {
-                showMessage(passwordError, 'error');
+                showMessage('message', passwordError, 'error');
                 return;
             }
 
-            // 向后端发送注册请求
-            fetch('/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&confirmPassword=${encodeURIComponent(confirmPassword)}&captcha=${encodeURIComponent(captcha)}&emailCode=${encodeURIComponent(emailCode)}`
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                // 准备表单数据
+                const formData = new FormData();
+                formData.append('username', username);
+                formData.append('email', email);
+                formData.append('password', password);
+                formData.append('confirmPassword', confirmPassword);
+                formData.append('captcha', captcha);
+                formData.append('emailCode', emailCode);
+                
+                // 向后端发送注册请求
+                const data = await fetchPostForm('/register', formData);
+                
                 if (data.success) {
-                    showMessage('注册成功！即将跳转到登录页...', 'success');
+                    showMessage('message', '注册成功！即将跳转到登录页...', 'success');
                     setTimeout(() => {
                         window.location.href = 'login.html';
                     }, 2000);
                 } else {
-                    showMessage(data.message || '注册失败', 'error');
+                    showMessage('message', data.message || '注册失败', 'error');
                     // 如果是验证码错误，刷新图形验证码
                     if (data.message.includes('验证码')) {
                         refreshCaptcha();
                     }
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error:', error);
-                showMessage('网络错误，请稍后重试', 'error');
-            });
+                showMessage('message', '网络错误，请稍后重试', 'error');
+            }
         });
 
         function validatePassword(password) {
@@ -380,17 +362,6 @@
             }
             
             return null;
-        }
-
-        function showMessage(text, type) {
-            const messageEl = document.getElementById('message');
-            messageEl.textContent = text;
-            messageEl.className = `message ${type}`;
-            messageEl.style.display = 'block';
-            
-            setTimeout(() => {
-                messageEl.style.display = 'none';
-            }, 3000);
         }
         
         // 添加全局鼠标柔和光效

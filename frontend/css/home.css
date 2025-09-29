@@ -633,3 +633,23 @@ p {
     opacity: 1;
     font-weight: 600;
 }
+
+/* 隐藏元素的类 */
+.hidden {
+    display: none !important;
+}
+
+/* 触摸目标优化 */
+@media (hover: none) and (pointer: coarse) {
+    nav a,
+    .btn,
+    .tab-button,
+    .panel-close {
+        /* 增加触摸目标大小 */
+        min-height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
