@@ -14,10 +14,7 @@ project_root = os.path.dirname(os.path.abspath(__file__))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-# 从personal_homepage_project目录导入应用
-sys.path.insert(0, os.path.join(project_root, 'personal_homepage_project'))
-
-from personal_homepage_project.backend.app import create_app
+from backend.app import create_app
 
 # 创建应用实例
 app = create_app(os.getenv('FLASK_ENV') or 'production')

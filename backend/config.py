@@ -11,9 +11,17 @@ class Config:
     
     # Redis配置
     REDIS_HOST = os.environ.get('REDIS_HOST') or 'localhost'
-    REDIS_PORT = os.environ.get('REDIS_PORT') or 6379
-    REDIS_DB = os.environ.get('REDIS_DB') or 0
+    REDIS_PORT = int(os.environ.get('REDIS_PORT') or 6379)
+    REDIS_DB = int(os.environ.get('REDIS_DB') or 0)
     REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD') or None
+    
+    # 邮件配置
+    MAIL_SERVER = os.environ.get('MAIL_SERVER') or 'localhost'
+    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'False').lower() in ('true', 'on', '1')
+    MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL', 'False').lower() in ('true', 'on', '1')
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
 class DevelopmentConfig(Config):
     """开发环境配置"""
@@ -29,7 +37,7 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
     
     # Redis连接
-    REDIS_URL = f"redis://{(':' + REDIS_PASSWORD + '@') if REDIS_PASSWORD else ''}{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+    REDIS_URL = f"redis://{(':' + Config.REDIS_PASSWORD + '@') if Config.REDIS_PASSWORD else ''}{Config.REDIS_HOST}:{Config.REDIS_PORT}/{Config.REDIS_DB}"
 
 class ProductionConfig(Config):
     """生产环境配置"""
@@ -40,7 +48,7 @@ class ProductionConfig(Config):
     
     # Redis连接
     REDIS_URL = os.environ.get('REDIS_URL') or \
-        f"redis://{(':' + REDIS_PASSWORD + '@') if REDIS_PASSWORD else ''}{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+        f"redis://{(':' + Config.REDIS_PASSWORD + '@') if Config.REDIS_PASSWORD else ''}{Config.REDIS_HOST}:{Config.REDIS_PORT}/{Config.REDIS_DB}"
 
 class TestingConfig(Config):
     """测试环境配置"""

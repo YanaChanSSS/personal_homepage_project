@@ -227,7 +227,7 @@ nav {
 nav a {
     font-weight: 500;
     font-size: 1.15rem;
-    color: #1a3a66;
+    color: #048851;
     transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     padding: 10px 18px;
     border-radius: 12px;
@@ -530,7 +530,7 @@ p {
     padding: 36px 0;
     background-color: rgba(0, 170, 255, 1.0);
     backdrop-filter: blur(12px);
-    color: #aaa;
+    color: #14ca84;
     font-size: 0.95rem;
     margin-top: 60px;
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.25);
@@ -592,11 +592,70 @@ p {
 
     #auth-panel {
         right: 16px;
+        width: calc(100% - 32px);
     }
 
     /* 手机端隐藏页脚（因为 .page-other 已包含） */
     .main-footer {
         display: none;
+    }
+    
+    /* 优化导航链接在小屏幕上的显示 */
+    nav a {
+        padding: 8px 12px;
+        font-size: 1rem;
+    }
+    
+    /* 调整项目卡片在小屏幕上的间距 */
+    .projects {
+        gap: 20px;
+    }
+    
+    /* 调整底部模块在小屏幕上的内边距 */
+    .text-placeholder,
+    .image-container {
+        margin: 16px;
+    }
+    
+    .text-placeholder {
+        min-height: 250px;
+    }
+}
+
+/* 超小屏幕优化 */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    h1 {
+        font-size: 2.4rem;
+    }
+    
+    h2 {
+        font-size: 1.8rem;
+    }
+    
+    .project {
+        max-width: 100%;
+    }
+    
+    nav {
+        gap: 10px;
+    }
+    
+    nav a {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+    
+    .text-placeholder h3 {
+        font-size: 1.3rem;
+    }
+    
+    .contact a {
+        margin: 10px 12px;
+        font-size: 1.3rem;
     }
 }
 
@@ -620,7 +679,7 @@ p {
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: #1a3a66;
+    color: #e274c7;
     text-decoration: none;
     font-size: 0.9rem;
     padding: 8px 0;
@@ -644,12 +703,17 @@ p {
     nav a,
     .btn,
     .tab-button,
-    .panel-close {
+    .panel-close,
+    .mobile-nav .nav-item {
         /* 增加触摸目标大小 */
         min-height: 44px;
         min-width: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+    
+    .mobile-nav .nav-item span {
+        padding: 8px 0;
     }
 }

@@ -7,9 +7,9 @@
     <!-- PWA配置 -->
     <meta name="theme-color" content="#6bb0f7"/>
     <meta name="description" content="YanaChan的个人主页，展示作品与收藏">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="images/logo-192.png">
-    <link rel="icon" href="images/logo.png" type="image/png">
+    <link rel="manifest" href="/frontend/manifest.json">
+    <link rel="apple-touch-icon" href="/frontend/png/YanaChan.png">
+    <link rel="icon" href="/frontend/png/YanaChan.png" type="image/png">
     
     <link rel="stylesheet" href="css/home.css" />
 </head>
@@ -19,17 +19,17 @@
     <header class="header">
         <div class="container">
             <div class="logo">
-                <img src="images/logo.png" alt="Logo" width="50" height="50" loading="lazy">
+                <img src="/frontend/png/YanaChan.png" alt="Logo" width="50" height="50" loading="lazy">
             </div>
             <nav class="nav">
-                <a href="home.html" class="nav-link">首页</a>
-                <a href="search.html" class="nav-link">搜索</a>
-                <a href="favorites.html" class="nav-link">收藏</a>
-                <a href="about.html" class="nav-link">关于</a>
+                <a href="/frontend/home.html" class="nav-link">首页</a>
+                <a href="/frontend/search.html" class="nav-link">搜索</a>
+                <a href="/frontend/favorites.html" class="nav-link">收藏</a>
+                <a href="/frontend/about.html" class="nav-link">关于</a>
             </nav>
-            <a href="login.html" id="login-trigger">登录</a>
+            <a href="/frontend/login.html" id="login-trigger">登录</a>
             <div id="user-profile" class="hidden">
-                <img src="png/YanaChan.png" alt="用户头像" class="user-avatar" width="40" height="40" loading="lazy">
+                <img src="/frontend/png/YanaChan.png" alt="用户头像" class="user-avatar" width="40" height="40" loading="lazy">
             </div>
         </div>
     </header>
@@ -105,8 +105,8 @@
             <div class="container">
                 <div class="module notice-module">
                     <div class="image-container">
-                        <a href="png/木柜子.png.png" target="_blank">
-                            <img src="png/木柜子.png" alt="望周知：木柜子" class="mini-image" width="300" height="200" loading="lazy">
+                        <a href="/frontend/png/木柜子.png.png" target="_blank">
+                            <img src="/frontend/png/木柜子.png" alt="望周知：木柜子" class="mini-image" width="300" height="200" loading="lazy">
                         </a>
                     </div>
                     <h3>望周知</h3>
@@ -155,7 +155,12 @@
     </nav>
 
     <!-- 引入主逻辑脚本 -->
-    <script src="js/home.js" type="module"></script>
-    <script src="js/main.js" type="module"></script>
+    <script src="/frontend/js/utils.js"></script>
+    <script src="/frontend/js/i18n.js"></script>
+    <script src="/frontend/js/components.js"></script>
+    <script src="/frontend/js/api.js"></script>
+    <script src="/frontend/js/events.js"></script>
+    <script src="/frontend/js/home.js"></script>
+    <script src="/frontend/sw.js"></script>
 </body>
 </html>
