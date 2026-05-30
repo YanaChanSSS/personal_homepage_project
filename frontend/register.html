@@ -347,16 +347,10 @@
             }
 
             try {
-                // 准备表单数据
-                const formData = new FormData();
-                formData.append('username', username);
-                formData.append('email', email);
-                formData.append('password', password);
-                formData.append('confirmPassword', confirmPassword);
-                formData.append('emailCode', emailCode);
-                
                 // 向后端发送注册请求
-                const data = await fetchPost('/register', formData);
+                const data = await fetchPost('/register', {
+                    username, email, password, confirmPassword, emailCode
+                });
                 
                 if (data.success) {
                     showMessage('message', '注册成功！即将跳转到登录页...', 'success');

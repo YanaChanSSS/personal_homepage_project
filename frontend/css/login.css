@@ -110,6 +110,7 @@ input[type="password"] {
     background: rgba(255, 255, 255, 0.2);
     color: white;
     outline: none;
+    transition: all 0.3s ease;
 }
 
 input[type="text"]::placeholder,
@@ -133,12 +134,23 @@ button {
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.3s, transform 0.2s;
     margin-top: 10px;
 }
 
 button:hover {
     background: #5aa0e7;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .switch-form {
@@ -150,10 +162,12 @@ button:hover {
     color: #8ec5fc;
     text-decoration: none;
     font-weight: 500;
+    transition: color 0.3s;
 }
 
 .switch-form a:hover {
     text-decoration: underline;
+    color: #6bb0f7;
 }
 
 .message {
@@ -162,6 +176,7 @@ button:hover {
     padding: 10px;
     border-radius: 6px;
     font-size: 14px;
+    transition: all 0.3s ease;
 }
 
 .error {
@@ -238,5 +253,14 @@ button:hover {
     button {
         padding: 14px;
         font-size: 16px;
+    }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+    input[type="text"],
+    input[type="password"],
+    button {
+        min-height: 44px;
     }
 }

@@ -47,7 +47,9 @@ function handleFetchError(error, defaultMessage = '网络错误，请稍后重�
 // 简化fetch GET请求
 async function fetchGet(url) {
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            credentials: 'include'  // 携带 cookie 用于 session 认证
+        });
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(errorText || `HTTP error! status: ${response.status}`);
@@ -66,11 +68,21 @@ async function fetchPost(url, data) {
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include',  // 携带 cookie 用于 session 认证
             body: JSON.stringify(data)
         });
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(errorText || `HTTP error! status: ${response.status}`);
+            let errorMessage = errorText || `HTTP error! status: ${response.status}`;
+            try {
+                const errorJson = JSON.parse(errorText);
+                if (errorJson.message) {
+                    errorMessage = errorJson.message;
+                }
+            } catch (e) {
+                // 不是 JSON，使用原始文本
+            }
+            throw new Error(errorMessage);
         }
         return await response.json();
     } catch (error) {
@@ -83,11 +95,30 @@ async function fetchPostForm(url, formData) {
     try {
         const response = await fetch(url, {
             method: 'POST',
+            credentials: 'include',  // 携带 cookie 用于 session 认证
             body: formData
         });
+        
+        // 特别处理登录响应
+        if (url === '/login') {
+            // 检查是否是重定向响应
+            if (response.type === 'opaqueredirect' || response.redirected) {
+                throw new Error('登录请求被重定向，请检查服务器配置');
+            }
+        }
+        
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(errorText || `HTTP error! status: ${response.status}`);
+            let errorMessage = errorText || `HTTP error! status: ${response.status}`;
+            try {
+                const errorJson = JSON.parse(errorText);
+                if (errorJson.message) {
+                    errorMessage = errorJson.message;
+                }
+            } catch (e) {
+                // 不是 JSON，使用原始文本
+            }
+            throw new Error(errorMessage);
         }
         return await response.json();
     } catch (error) {
@@ -150,87 +181,102 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('zh-CN', options);
 }
 
-// 本地存储操作
+// 验证邮箱格式
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+// 验证手机号格式
+function validatePhone(phone) {
+    const re = /^1[3-9]\d{9}$/;
+    return re.test(phone);
+}
+
+// 获取URL参数
+function getUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    const result = {};
+    for (const [key, value] of params) {
+        result[key] = value;
+    }
+    return result;
+}
+
+// 设置URL参数
+function setUrlParams(params) {
+    const url = new URL(window.location);
+    for (const [key, value] of Object.entries(params)) {
+        if (value === undefined || value === null) {
+            url.searchParams.delete(key);
+        } else {
+            url.searchParams.set(key, value);
+        }
+    }
+    window.history.replaceState({}, '', url);
+}
+
+/**
+ * 简单的本地存储工具对象
+ * @type {Object}
+ */
 const storage = {
+    /**
+     * 设置本地存储项
+     * @param {string} key - 存储键
+     * @param {any} value - 存储值
+     * @returns {void}
+     */
     set(key, value) {
-        try {
-            localStorage.setItem(key, JSON.stringify(value));
-            return true;
-        } catch (e) {
-            console.error('LocalStorage set error:', e);
-            return false;
-        }
+        localStorage.setItem(key, JSON.stringify(value));
     },
     
-    get(key, defaultValue = null) {
-        try {
-            const item = localStorage.getItem(key);
-            return item ? JSON.parse(item) : defaultValue;
-        } catch (e) {
-            console.error('LocalStorage get error:', e);
-            return defaultValue;
-        }
+    /**
+     * 获取本地存储项
+     * @param {string} key - 存储键
+     * @returns {any} 存储值，如果不存在则返回 null
+     */
+    get(key) {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : null;
     },
     
+    /**
+     * 移除本地存储项
+     * @param {string} key - 存储键
+     * @returns {void}
+     */
     remove(key) {
-        try {
-            localStorage.removeItem(key);
-            return true;
-        } catch (e) {
-            console.error('LocalStorage remove error:', e);
-            return false;
-        }
+        localStorage.removeItem(key);
+    },
+    
+    /**
+     * 清空所有本地存储项
+     * @returns {void}
+     */
+    clear() {
+        localStorage.clear();
     }
 };
 
-// Cookie操作
+// Cookie 工具对象
 const cookies = {
-    set(name, value, days = 7) {
-        const expires = new Date();
-        expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-        document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/`;
+    set(key, value, days = 7) {
+        const expires = new Date(Date.now() + days * 86400000).toUTCString();
+        document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(value)};expires=${expires};path=/;SameSite=Lax`;
     },
-    
-    get(name) {
-        const nameEQ = name + "=";
-        const ca = document.cookie.split(';');
-        for(let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
-        }
-        return null;
+    get(key) {
+        const match = document.cookie.match(new RegExp(`(?:^|; )${encodeURIComponent(key)}=([^;]*)`));
+        return match ? decodeURIComponent(match[1]) : null;
     },
-    
-    remove(name) {
-        this.set(name, "", -1);
+    remove(key) {
+        document.cookie = `${encodeURIComponent(key)}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
     }
 };
 
-// 表单验证函数
-const validators = {
-    // 验证邮箱格式
-    email(email) {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email);
-    },
-    
-    // 验证密码强度
-    password(password) {
-        // 至少8位，包含大小写字母、数字和特殊字符
-        const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-        return re.test(password);
-    },
-    
-    // 验证用户名
-    username(username) {
-        // 3-20位，只能包含字母、数字、下划线
-        const re = /^[a-zA-Z0-9_]{3,20}$/;
-        return re.test(username);
-    }
-};
+// 将 storage 和 cookies 对象导出
+export { storage, cookies };
 
-// 导出所有函数
 export {
     showMessage,
     showLoading,
@@ -244,7 +290,8 @@ export {
     isInViewport,
     smoothScrollTo,
     formatDate,
-    storage,
-    cookies,
-    validators
+    validateEmail,
+    validatePhone,
+    getUrlParams,
+    setUrlParams
 };
