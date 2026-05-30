@@ -1,5 +1,7 @@
 // 主应用程序入口文件
 import { storage, cookies } from './utils.js';
+import { checkAuth } from './auth.js';
+import store from './store.js';
 
 class App {
   constructor() {
@@ -10,14 +12,108 @@ class App {
 
   // 初始化应用
   async init() {
-    this.setupServiceWorker();
-    this.setupOnlineStatus();
-    this.setupBeforeInstallPrompt();
-    this.setupGlobalErrorHandling();
-    this.setupPerformanceMonitoring();
+    try {
+      // 先设置UI初始状态
+      this.updateAuthUI({
+        isLoggedIn: false,
+        profile: null,
+        permissions: []
+      });
+
+      // 初始化服务
+      this.setupServiceWorker();
+      this.setupOnlineStatus();
+      this.setupBeforeInstallPrompt();
+      this.setupGlobalErrorHandling();
+      this.setupPerformanceMonitoring();
+      this.setupInstallPrompt();
+      
+      // 设置状态变化监听
+      this.setupAuthListeners();
+      
+      // 最后检查登录状态
+      await this.initializeAuth();
+    } catch (error) {
+      console.error('应用初始化失败:', error);
+    }
+  }
+  
+  // 初始化认证状态
+  async initializeAuth() {
+    try {
+      const isAuthenticated = await checkAuth();
+      console.log('认证状态:', isAuthenticated ? '已登录' : '未登录');
+      
+      // 确保UI状态正确
+      const userState = store.getState().user;
+      this.updateAuthUI(userState);
+      
+      return isAuthenticated;
+    } catch (error) {
+      console.error('初始化认证失败:', error);
+      this.updateAuthUI({
+        isLoggedIn: false,
+        profile: null,
+        permissions: []
+      });
+      return false;
+    }
+  }
+  
+  // 设置认证状态变化监听
+  setupAuthListeners() {
+    // 监听store中的用户状态变化
+    store.subscribe((state) => {
+      // 确保状态变化时更新UI
+      this.updateAuthUI(state.user);
+    });
+  }
+  
+  // 更新认证相关的UI
+  updateAuthUI(user) {
+    const loginTrigger = document.getElementById('login-trigger');
+    const userProfile = document.getElementById('user-profile');
+    const userAvatar = document.getElementById('user-avatar');
+    const userName = document.getElementById('user-name');
     
-    // 添加到主屏幕功能
-    this.setupInstallPrompt();
+    // 确保元素存在
+    if (!loginTrigger || !userProfile) {
+        console.warn('未找到登录相关UI元素，将在DOM加载完成后重试');
+        // 如果DOM未完全加载，延迟重试
+        if (document.readyState !== 'complete') {
+            window.addEventListener('load', () => this.updateAuthUI(user));
+        } else {
+            // DOM已加载完成，但仍找不到元素，延迟执行
+            setTimeout(() => this.updateAuthUI(user), 100);
+        }
+        return;
+    }
+    
+    if (user && user.isLoggedIn) {
+        // 用户已登录
+        loginTrigger.style.display = 'none';
+        userProfile.style.display = 'flex';
+        
+        // 更新用户信息
+        if (userName && user.profile && user.profile.username) {
+            userName.textContent = user.profile.username;
+        }
+        
+        // 更新头像
+        if (userAvatar) {
+            const avatarUrl = user.profile && user.profile.avatar ? 
+                user.profile.avatar : 
+                '/frontend/png/YanaChan.png';
+            userAvatar.src = avatarUrl;
+            userAvatar.alt = user.profile && user.profile.username ? 
+                user.profile.username + '的头像' : 
+                '用户头像';
+        }
+    } else {
+        // 用户未登录
+        loginTrigger.style.display = 'block';
+        userProfile.style.display = 'none';
+    }
   }
 
   // 设置Service Worker

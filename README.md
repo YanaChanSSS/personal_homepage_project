@@ -1,136 +1,137 @@
-# 个人主页项目
+# 个人主页
 
-这是一个功能完整的个人主页全栈Web应用，用于展示个人信息、项目作品，并提供用户交互功能如注册、登录和留言。
+一个功能完整的个人主页全栈应用，支持用户注册登录、个人资料管理和留言互动。
+
+## 技术栈
+
+| 层级 | 技术 |
+|------|------|
+| 前端 | HTML5, CSS3, JavaScript (ES6+ Modules), Service Worker |
+| 后端 | Python 3.8+, Flask, SQLAlchemy |
+| 数据库 | MySQL, Redis |
+| 部署 | Gunicorn, Nginx 反向代理 |
+
+前端使用原生 JS 模块化开发，无框架依赖。
+
+## 功能特性
+
+- 响应式个人主页，含项目展示、联系方式等模块
+- 用户注册与登录（支持用户名/邮箱登录）
+- Session 认证，登录状态持久化
+- 个人资料查看与编辑
+- 留言板（用户留言，管理员回复）
+- 移动端适配，独立分页导航
 
 ## 项目结构
 
 ```
-fullstack/
-├── .gitignore              # Git忽略文件
-├── .env.example           # 环境变量示例文件
-├── README.md               # 项目说明文档
+├── backend/                 # 后端
+│   ├── __init__.py
+│   ├── app.py              # Flask 主应用 (路由、会话配置)
+│   ├── auth.py             # 认证逻辑
+│   ├── config.py           # 配置管理
+│   ├── models.py           # 数据模型 (User, Message)
+│   └── utils.py            # 工具函数
+├── frontend/               # 前端
+│   ├── home.html           # 首页
+│   ├── login.html          # 登录页
+│   ├── register.html       # 注册页
+│   ├── profile.html        # 个人资料页
+│   ├── css/                # 样式
+│   ├── js/                 # JS 模块
+│   │   ├── api.js          # API 客户端
+│   │   ├── auth.js         # 认证检查
+│   │   ├── store.js        # 前端状态管理
+│   │   ├── router.js       # 路由
+│   │   ├── home.js         # 首页逻辑
+│   │   ├── login.js        # 登录逻辑
+│   │   ├── main.js         # 应用入口
+│   │   ├── components.js   # UI 组件
+│   │   ├── events.js       # 事件处理
+│   │   ├── i18n.js         # 国际化
+│   │   ├── utils.js        # 工具函数
+│   │   └── validator.js    # 表单校验
+│   ├── png/                # 图片资源
+│   ├── sw.js               # Service Worker
+│   └── manifest.json        # PWA 清单
+├── wsgi.py                 # WSGI 入口
+├── gunicorn_conf.py        # Gunicorn 配置
+├── nginx_bt_config.conf    # Nginx 参考配置
+├── start.sh                # 启动脚本
+├── create_admin.py         # 创建管理员脚本
+├── requirements.txt        # Python 依赖
+├── .env.example            # 环境变量示例
 ├── DEPLOYMENT_BT.md        # 宝塔面板部署指南
-├── requirements.txt        # Python依赖声明
-├── wsgi.py                # WSGI入口文件
-├── backend/                # 后端代码目录
-│   ├── __init__.py        # 包初始化文件
-│   ├── app.py             # Flask主应用
-│   ├── models.py          # 数据模型
-│   ├── config.py          # 配置文件
-│   └── utils.py           # 工具函数
-└── frontend/               # 前端代码目录
-    ├── build.js           # 构建脚本
-    ├── home.html          # 首页
-    ├── login.html         # 登录页
-    ├── manifest.json      # Web应用清单文件
-    ├── profile.html       # 个人资料页
-    ├── register.html      # 注册页
-    ├── sw.js              # Service Worker
-    ├── css/               # 样式文件
-    ├── js/                # JavaScript文件
-    └── png/               # 图片资源
+└── README.md
 ```
 
-## 技术栈
-
-### 前端
-- HTML5
-- CSS3
-- JavaScript (ES6+)
-- 原生JS（无框架）
-
-### 后端
-- Python 3.x
-- Flask
-- SQLAlchemy
-- Redis
-- MySQL
-
-## 功能特性
-
-- 响应式首页展示个人介绍、项目、联系方式等
-- 用户注册与登录（支持用户名/邮箱）
-- 图形验证码与邮箱验证码双重验证
-- 密码强度校验（至少8位，含大小写、数字、特殊字符）
-- 个人资料查看与编辑
-- 留言板功能（用户留言，管理员可回复）
-- 管理员后台管理留言与权限控制
-
-## 安装与运行
+## 快速开始
 
 ### 环境要求
-- Python 3.x
-- MySQL数据库
-- Redis缓存服务
-- SMTP邮件服务
 
-### 安装步骤
+- Python 3.8+
+- MySQL 5.7+
+- Redis 5.0+
 
-1. 克隆项目：
-   ```bash
-   git clone <repository-url>
-   cd fullstack
-   ```
+### 本地开发
 
-2. 创建虚拟环境并激活：
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   venv\Scripts\activate     # Windows
-   ```
-
-3. 安装依赖：
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. 配置环境变量：
-   复制 `.env.example` 文件为 `.env`，并配置数据库、Redis和邮件服务参数。
-
-5. 初始化数据库：
-   ```bash
-   # 在Python shell中执行
-   from backend.app import app, db
-   with app.app_context():
-       db.create_all()
-   ```
-
-6. 运行应用：
-   ```bash
-   python backend/app.py
-   ```
-
-## 部署
-
-### 宝塔面板部署
-
-参考 [DEPLOYMENT_BT.md](file:///e:/text/fullstack/DEPLOYMENT_BT.md) 文件了解如何在宝塔面板中部署该项目。
-
-### 使用Gunicorn部署：
 ```bash
-gunicorn -w 4 -b 0.0.0.0:5000 wsgi:app
+# 1. 创建虚拟环境
+python -m venv venv
+source venv/bin/activate
+
+# 2. 安装依赖
+pip install -r requirements.txt
+
+# 3. 配置环境变量
+cp .env.example .env
+# 编辑 .env 填入数据库和 Redis 连接信息
+
+# 4. 启动开发服务器
+python wsgi.py
 ```
 
-## 目录说明
+访问 `http://localhost:5000`。
 
-### backend/
-后端代码目录，包含Flask应用、数据模型和配置文件。
+### 生产部署
 
-### frontend/
-前端代码目录，包含HTML页面、CSS样式、JavaScript脚本和静态资源。
+使用 Gunicorn + Nginx：
 
-### requirements.txt
-项目依赖列表。
+```bash
+gunicorn -c gunicorn_conf.py wsgi:app
+```
 
-### wsgi.py
-WSGI入口文件，用于生产环境部署。
+宝塔面板部署请参阅 [DEPLOYMENT_BT.md](DEPLOYMENT_BT.md)。
 
-### .env.example
-环境变量配置示例文件，包含数据库、Redis和邮件服务配置示例。
+## 配置说明
 
-## 开发规范
+`.env` 文件核心配置项：
 
-- 遵循PEP8 Python编码规范
-- 使用语义化版本控制
-- 编写单元测试保证代码质量
-- 使用Git进行版本管理
+```env
+FLASK_ENV=production              # 运行环境
+SECRET_KEY=<随机密钥>              # Flask Session 签名密钥
+DATABASE_URL=mysql+pymysql://...  # MySQL 连接串
+REDIS_HOST=localhost              # Redis 地址
+REDIS_PORT=6379                   # Redis 端口
+SESSION_COOKIE_SECURE=True        # HTTPS 下启用安全 Cookie
+SESSION_COOKIE_SAMESITE=Lax       # 同站策略
+SESSION_COOKIE_DOMAIN=.example.com # 域名（按需配置）
+```
+
+## API 概览
+
+| 路由 | 方法 | 说明 |
+|------|------|------|
+| `/`, `/home` | GET | 首页 |
+| `/login` | GET, POST | 登录 |
+| `/register` | GET, POST | 注册 |
+| `/logout` | POST | 登出 |
+| `/profile` | GET, POST | 个人资料 |
+| `/api/check_auth` | GET | 检查认证状态 |
+| `/api/check_login` | GET | 检查登录状态 |
+| `/api/messages` | GET, POST | 留言 |
+| `/api/user_info` | GET | 用户信息 |
+
+## License
+
+MIT

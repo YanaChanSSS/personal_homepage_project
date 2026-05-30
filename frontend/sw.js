@@ -1,5 +1,5 @@
 // Service Worker for caching and offline functionality
-const CACHE_NAME = 'yanchan-v1.0.0';
+const CACHE_NAME = 'yanchan-v1.0.1';
 const urlsToCache = [
   '/',
   '/home.html',
@@ -16,6 +16,7 @@ const urlsToCache = [
 
 // 安装事件 - 缓存静态资源
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -38,35 +39,44 @@ self.addEventListener('activate', event => {
         })
       );
     })
+    .then(() => self.clients.claim())
   );
 });
 
 // 获取事件 - 实现缓存策略
 self.addEventListener('fetch', event => {
-  // 只缓存同源请求
+  // 只处理同源请求
   if (!event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
+
+  const isApiRequest = event.request.url.includes('/api/');
+  const isGetMethod = event.request.method === 'GET';
+
+  if (isApiRequest || !isGetMethod) {
+    event.respondWith(
+      fetch(event.request).catch(error => {
+        console.error('Network request failed:', error);
+        throw error;
+      })
+    );
     return;
   }
 
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // 如果在缓存中找到响应，则返回缓存的版本
         if (response) {
           return response;
         }
 
-        // 否则发起网络请求
         return fetch(event.request).then(response => {
-          // 检查响应是否有效
           if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
           }
 
-          // 克隆响应，因为响应流只能被消费一次
           const responseToCache = response.clone();
 
-          // 将响应缓存起来
           caches.open(CACHE_NAME)
             .then(cache => {
               cache.put(event.request, responseToCache);
@@ -74,8 +84,7 @@ self.addEventListener('fetch', event => {
 
           return response;
         }).catch(error => {
-          // 如果是HTML请求且离线，则返回离线页面
-          if (event.request.headers.get('accept').includes('text/html')) {
+          if (event.request.headers.get('accept')?.includes('text/html')) {
             return caches.match('/home.html');
           }
           
@@ -83,7 +92,7 @@ self.addEventListener('fetch', event => {
           throw error;
         });
       })
-    );
+  );
 });
 
 // 推送通知事件处理

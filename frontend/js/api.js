@@ -49,10 +49,16 @@ class ApiClient {
       ...options.headers
     };
     
+    // 添加缓存控制头以避免临时标题问题
+    headers['Cache-Control'] = 'no-cache';
+    headers['Pragma'] = 'no-cache';
+    
     // 构建fetch选项
     const fetchOptions = {
+      cache: 'no-store',
       ...options,
-      headers
+      headers,
+      credentials: 'include' // 关键：携带 cookie 用于 session 认证
     };
     
     try {
@@ -168,15 +174,9 @@ class ApiClient {
 
   // 登录
   async login(credentials) {
+    // 后端使用 session 机制，不需要手动处理 token
+    // credentials: 'include' 会自动携带和保存 session cookie
     const response = await this.post('/login', credentials);
-    
-    // 保存认证令牌
-    if (response.token) {
-      cookies.set('authToken', response.token, 7); // 保存7天
-      storage.set('authToken', response.token);
-      this.setAuthToken(response.token);
-    }
-    
     return response;
   }
 
@@ -201,24 +201,12 @@ class ApiClient {
 
   // 检查登录状态
   async checkLoginStatus() {
-    const token = this.getAuthToken();
-    if (!token) {
-      return { logged_in: false };
-    }
-    
-    this.setAuthToken(token);
-    
     try {
-      return await this.get('/api/check_login');
+      return await this.get('/api/check_login', { _ts: Date.now() });
     } catch (error) {
-      // 如果是认证错误，清除认证信息
-      if (error.status === 401) {
-        cookies.remove('authToken');
-        storage.remove('authToken');
-        this.setAuthToken(null);
-      }
-      
-      throw error;
+      // 如果请求失败，返回未登录状态
+      console.error('检查登录状态失败:', error);
+      return { logged_in: false };
     }
   }
 
@@ -259,6 +247,6 @@ class ApiError extends Error {
 }
 
 // 创建并导出API客户端实例
-const apiClient = new ApiClient();
+const apiClient = new ApiClient('');
 export default apiClient;
 export { ApiError };
